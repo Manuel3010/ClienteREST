@@ -18,6 +18,7 @@ namespace AppClienteTPI
         String json;
         JavaScriptSerializer serializador;
         List<TipoRequisito> listaTipoRequisito;
+        TipoRequisito registro;
         
         public FrmTipoRequisito()
         {
@@ -27,6 +28,32 @@ namespace AppClienteTPI
         private void rbActivo_CheckedChanged(object sender, EventArgs e)
         {
 
+        }
+
+
+        public void buscarPorId(String id) {
+            String urlId = url +"/"+ id;
+            json = new WebClient().DownloadString(urlId);
+            serializador = new JavaScriptSerializer();
+            registro = serializador.Deserialize<TipoRequisito>(json);
+            dtTipoRequisito.Rows.Clear();
+            dtTipoRequisito.Rows.Add(registro.idTipoRequisito, registro.nombre, registro.activo, registro.observacion);
+            //MessageBox.Show(registro.nombre);
+            //dtTipoRequisito.Rows.Clear();
+
+            /*dtTipoRequisito.Rows[0].Cells[0].Value = registro.idTipoRequisito;
+            dtTipoRequisito.Rows[0].Cells[1].Value = registro.nombre;
+            dtTipoRequisito.Rows[0].Cells[2].Value = registro.activo;
+            dtTipoRequisito.Rows[0].Cells[3].Value = registro.observacion;*/
+
+
+
+            //MessageBox.Show(urlId);
+
+
+
+
+            //return null;
         }
 
         public void cargarTiposRequisito() {
@@ -44,7 +71,7 @@ namespace AppClienteTPI
 
                     dtTipoRequisito.Rows[x - 1].Cells[0].Value = listaTipoRequisito[i].idTipoRequisito;
                     dtTipoRequisito.Rows[x - 1].Cells[1].Value = listaTipoRequisito[i].nombre;
-                    dtTipoRequisito.Rows[x - 1].Cells[2].Value = listaTipoRequisito[i].activo;
+                    dtTipoRequisito.Rows[x - 1].Cells[2].Value = listaTipoRequisito[i].activo?"Activo":"Inactivo";
                     dtTipoRequisito.Rows[x - 1].Cells[3].Value = listaTipoRequisito[i].observacion;
                 }        
             }
@@ -57,6 +84,51 @@ namespace AppClienteTPI
         private void FrmTipoRequisito_Load(object sender, EventArgs e)
         {
             cargarTiposRequisito();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            buscarPorId("1");
+        }
+
+        private void btnBuscar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (txtFindId.Text == " ") {
+                    MessageBox.Show("No ha introducido ningun valor de busqueda");
+                }
+                else
+                {
+                    String id = txtFindId.Text;
+                    buscarPorId(id);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+        }
+
+        private void txtFindId_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (Char.IsDigit(e.KeyChar))
+        {
+            e.Handled = false;
+        }
+        else if (Char.IsControl(e.KeyChar))
+        {
+            e.Handled = false;
+       }
+       else if (Char.IsSeparator(e.KeyChar))
+       {
+           e.Handled = false;
+       }
+       else
+       {
+           e.Handled = true;
+       }
         }
     }
 }
